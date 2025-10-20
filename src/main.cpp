@@ -75,8 +75,10 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({1, -2, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({-4, 5, -6});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+	pros::MotorGroup left_mg({2, -12, 14});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
+	pros::MotorGroup right_mg({-1, 11, -13});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+	pros::motor intake(15); 				   // Creates a motor for the intake
+	pros::motor silly_little_guy(3);		   // Creates a silly little guy
 
 	while (true) {
 //		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -90,6 +92,20 @@ void opcontrol() {
 		right_mg.move(dir + turn);                     							// Sets right motor voltage
 		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));		// Prints the left analog y value
 		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));		// Prints the right analog x value
+
+		int intakeFwd = master.get_digital(DIGITAL_R2);
+		int intakeRev = master.get_digital(DIGITAL_R2);
+		int intakeDir = intakeFwd - intakeRev;
+		if intakeDir == 1;
+		{
+			intake.move(127)
+		}
+		else if intakeDir == -1;
+		{
+			intake.move(-127)
+		}
+		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeDir));
+
 		pros::delay(20);                               							// Run for 20 ms then update
 	}
 }
