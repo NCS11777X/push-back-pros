@@ -93,18 +93,11 @@ void opcontrol() {
 		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));		// Prints the left analog y value
 		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));		// Prints the right analog x value
 
-		int intakeFwd = master.get_digital(DIGITAL_R2);
-		int intakeRev = master.get_digital(DIGITAL_R2);
-		int intakeDir = intakeFwd - intakeRev;
-		if intakeDir == 1;
-		{
-			intake.move(127)
-		}
-		else if intakeDir == -1;
-		{
-			intake.move(-127)
-		}
-		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeDir));
+		int intakeFwd = master.get_digital(DIGITAL_R2);							// Gets the state of R2
+		int intakeRev = master.get_digital(DIGITAL_R1);							// Gets the state of R1
+		intake.move((intakeFwd - intakeRev) * 127)								// Sets the intake voltage
+	
+		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev));
 
 		pros::delay(20);                               							// Run for 20 ms then update
 	}
