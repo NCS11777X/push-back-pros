@@ -77,8 +77,8 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::MotorGroup left_mg({2, -12, 14});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
 	pros::MotorGroup right_mg({-1, 11, -13});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
-	pros::motor intake(15); 				   // Creates a motor for the intake
-	pros::motor back_intake(3);		   		   // Creates a motor for the back intake
+	pros::MotorGroup intake({15}); 			   // Creates a motor for the intake
+	pros::MotorGroup back_intake({3});         // Creates a motor for the back intake
 
 	while (true) {
 //		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
