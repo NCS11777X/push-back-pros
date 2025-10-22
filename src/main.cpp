@@ -81,7 +81,7 @@ void opcontrol() {
 	pros::MotorGroup left_mg({2, -12, 14});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
 	pros::MotorGroup right_mg({-1, 11, -13});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 	pros::MotorGroup intake({15, 16}); 			   // Creates a motor group for the intake
-	pros::MotorGroup back_intake({3});         		   // Creates a motor for the back intake
+	pros::MotorGroup back_intake({3, 4});          // Creates a motor group for the back intake
 	pros::adi::DigitalOut flap({1, 2});	// Creates a group for the pistons that power the flap
 
 	while (true) {
