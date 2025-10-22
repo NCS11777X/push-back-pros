@@ -1,4 +1,7 @@
 #include "main.h"
+#include "liblvgl/llemu.hpp"
+#include "pros/adi.hpp"
+#include "pros/misc.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -77,28 +80,40 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::MotorGroup left_mg({2, -12, 14});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
 	pros::MotorGroup right_mg({-1, 11, -13});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
-	pros::MotorGroup intake({15}); 			   		   // Creates a motor for the intake
+	pros::MotorGroup intake({15, 16}); 			   // Creates a motor group for the intake
 	pros::MotorGroup back_intake({3});         		   // Creates a motor for the back intake
+	pros::adi::DigitalOut flap({1, 2});	// Creates a group for the pistons that power the flap
 
 	while (true) {
-//		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-//		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-//		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
 
 		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    							// Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  							// Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);                      							// Sets left motor voltage
-		right_mg.move(dir + turn);                     							// Sets right motor voltage
+		int dir = master.get_analog(ANALOG_LEFT_Y);    						// Gets amount forward/backward from left joystick
+		int turn = master.get_analog(ANALOG_RIGHT_X);  						// Gets the turn left/right from right joystick
+		left_mg.move(dir - turn);                      						// Sets left motor voltage
+		right_mg.move(dir + turn);                     						// Sets right motor voltage
 		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));		// Prints the left analog y value
 		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));		// Prints the right analog x value
 
+		// Intake control system
 		int intakeFwd = master.get_digital(DIGITAL_R2);							// Gets the state of R2
 		int intakeRev = master.get_digital(DIGITAL_R1);							// Gets the state of R1
 		intake.move((intakeFwd - intakeRev) * 127);							// Sets the intake voltage
-	
 		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev)); // Prints the direction of the intake
 
-		pros::delay(20);                               							// Run for 20 ms then update
+		// Flap control system
+		bool flapState{false};								    // Sets the default flap state to 'false'
+		if (master.get_digital(DIGITAL_A) == 1) {	    // Checks if the 'A' button has been pressed
+			if (!flapState) {								   // Checks if the flap is currently down
+				flap.set_value(1);							   // Sets the pistons to on, raising the flap
+				flapState = true;							   // Sets the flap state to 'true'
+			}
+			else if (flapState) {							   // Checks if the flap is currently up
+				flap.set_value(0);							   // Sets the pistons to off, lowering the flap
+				flapState = false;							   // Sets the flap state to 'false'
+			}
+		}
+		pros::lcd::set_text(3, "Flap state: " + std::to_string(flapState));	// Prints the current state of the flap
+
+		pros::delay(20);                               					// Run for 20 ms then update
 	}
 }
