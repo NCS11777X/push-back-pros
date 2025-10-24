@@ -103,8 +103,8 @@ void opcontrol() {
 		right_mg.move(dir - turn);                     			// Sets right motor voltage
 
 
-		// Flap control system
-		
+		// Flap control system (ignore that there isnt anything here)
+
 
 
 		// Intake control system
