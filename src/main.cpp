@@ -103,8 +103,8 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::MotorGroup left_mg({-2, -12, -14}, pros::MotorGearset::green);	// Creates a motor group with forwards ports 2, 12, and 14
 	pros::MotorGroup right_mg({1, 11, 13}, pros::MotorGearset::green);		// Creates a motor group with reversed ports 1, 11, and 13
-	pros::Motor lower_intake(15); 			   		// Creates a motor for the lower intake
-	pros::Motor upper_intake(16);						// Creates a motor for the upper intake
+	pros::Motor lower_intake(16); 			   		// Creates a motor for the lower intake
+	pros::Motor upper_intake(15);						// Creates a motor for the upper intake
 	pros::Motor lower_back_intake(3);    	   			// Creates a motor for the lower back intake
 	pros::Motor upper_back_intake(4);		   			// Creates a motor for the upper back intake
 	pros::adi::DigitalOut flap('h');			   	// Creates a group for the pistons that power the flap
@@ -142,13 +142,12 @@ void opcontrol() {
 		upper_intake.move((outtakeFwd - outtakeRev) * 127);						// Sets the upper intake voltage
 		lower_back_intake.move((outtakeFwd - outtakeRev) * 127);				    // Sets the lower back intake voltage
 		upper_back_intake.move((outtakeFwd - outtakeRev) * 127);					// Sets the upper back intake voltage
-
 		
 		// Debug information
 		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));							// Prints the left analog y value
 		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));							// Prints the right analog x value
 		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev));		// Prints the direction of the intake
-		pros::lcd::set_text(3, "Outtake direction: " + std::to_string(outtakeFwd - outtakeRev));	// Prints the direction of the outtake
+		//pros::lcd::set_text(3, "Outtake direction: " + std::to_string(outtakeFwd - outtakeRev));	// Prints the direction of the outtake
 
 
 		pros::delay(20);                         // Run for 20 ms then update
