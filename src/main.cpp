@@ -6,6 +6,7 @@
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
 #include "pros/rtos.hpp"
+#include <string>
 
 /**
  * A callback function for LLEMU's center button.
@@ -132,15 +133,22 @@ void opcontrol() {
 		int intakeRev = master.get_digital(DIGITAL_R1);							// Gets the state of R1
 
 		lower_intake.move(-(intakeFwd - intakeRev) * 127);					    // Sets the lower intake voltage
-		upper_intake.move((intakeFwd - intakeRev) * 127);						// Sets the upper intake voltage
-		lower_back_intake.move((intakeFwd - intakeRev) * 127);				    // Sets the lower back intake voltage
-		upper_back_intake.move((intakeFwd - intakeRev) * 127);					// Sets the upper back intake voltage
+
+
+		// Outtake control system
+		int outtakeFwd = master.get_digital(DIGITAL_L2);
+		int outtakeRev = master.get_digital(DIGITAL_L1);
+
+		upper_intake.move((outtakeFwd - outtakeRev) * 127);						// Sets the upper intake voltage
+		lower_back_intake.move((outtakeFwd - outtakeRev) * 127);				    // Sets the lower back intake voltage
+		upper_back_intake.move((outtakeFwd - outtakeRev) * 127);					// Sets the upper back intake voltage
 
 		
 		// Debug information
-		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));						// Prints the left analog y value
-		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));						// Prints the right analog x value
-		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev));	// Prints the direction of the intake
+		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));							// Prints the left analog y value
+		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));							// Prints the right analog x value
+		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev));		// Prints the direction of the intake
+		pros::lcd::set_text(3, "Outtake direction: " + std::to_string(outtakeFwd - outtakeRev));	// Prints the direction of the outtake
 
 
 		pros::delay(20);                         // Run for 20 ms then update
