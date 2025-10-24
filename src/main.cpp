@@ -111,22 +111,14 @@ void opcontrol() {
 
 		intake.move(-(intakeFwd - intakeRev) * 127);							// Sets the intake voltage
 		intake_2.move((intakeFwd - intakeRev) * 127);
-		//if (!flapState) {															   // Checks if the flap is currently down
-			lower_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the lower back intake to spin in reverse
-			upper_back_intake.move(intakeFwd - intakeRev);					   // Sets the upper back intake to spin forwards
-//		}
-//		else {
-//			lower_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the lower back intake to spin in reverse
-//			upper_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the upper back intake to spin in reverse
-//		}
+		lower_back_intake.move((intakeFwd - intakeRev) * 127);				   // Sets the lower back intake to spin in reverse
+		upper_back_intake.move((intakeFwd - intakeRev) * 127);					   // Sets the upper back intake to spin forwards
 
 		
-
 		// Debug information
 		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));		// Prints the left analog y value
 		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));		// Prints the right analog x value
 		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev)); // Prints the direction of the intake
-	//	pros::lcd::set_text(3, "Flap state: " + std::to_string(flapState));	// Prints the current state of the flap
 
 
 		pros::delay(20);                         // Run for 20 ms then update
