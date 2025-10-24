@@ -65,7 +65,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -82,24 +84,24 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({-2, -12, -14}, pros::MotorGearset::green);     // Creates a motor group with forwards ports 2, 12, and 14
-	pros::MotorGroup right_mg({1, 11, 13}, pros::MotorGearset::green); // Creates a motor group with reversed ports 1, 11, and 13
-	pros::MotorGroup intake({15}); 			   // Creates a motor group for the intake
-	pros::MotorGroup intake_2({16});
-	pros::MotorGroup lower_back_intake({3});    	   // Creates a motor for the lower back intake
-	pros::MotorGroup upper_back_intake({4});		   // Creates a motor for the upper back intake
-	pros::adi::DigitalOut flap('h');			   // Creates a group for the pistons that power the flap
+	pros::MotorGroup left_mg({-2, -12, -14}, pros::MotorGearset::green);	// Creates a motor group with forwards ports 2, 12, and 14
+	pros::MotorGroup right_mg({1, 11, 13}, pros::MotorGearset::green);		// Creates a motor group with reversed ports 1, 11, and 13
+	pros::Motor lower_intake(15); 			   		// Creates a motor for the lower intake
+	pros::Motor upper_intake(16);						// Creates a motor for the upper intake
+	pros::Motor lower_back_intake(3);    	   			// Creates a motor for the lower back intake
+	pros::Motor upper_back_intake(4);		   			// Creates a motor for the upper back intake
+	pros::adi::DigitalOut flap('h');			   	// Creates a group for the pistons that power the flap
 	
 
 	while (true) {
 
 		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    						// Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  						// Gets the turn left/right from right joystick
+		int dir = master.get_analog(ANALOG_LEFT_Y);    			// Gets amount forward/backward from left joystick
+		int turn = master.get_analog(ANALOG_RIGHT_X);  			// Gets the turn left/right from right joystick
 
-		left_mg.move(dir + turn);                      						// Sets left motor voltage
-		right_mg.move(dir - turn);                     						// Sets right motor voltage
-		
+		left_mg.move(dir + turn);                      			// Sets left motor voltage
+		right_mg.move(dir - turn);                     			// Sets right motor voltage
+
 
 		// Flap control system
 		
@@ -109,16 +111,16 @@ void opcontrol() {
 		int intakeFwd = master.get_digital(DIGITAL_R2);							// Gets the state of R2
 		int intakeRev = master.get_digital(DIGITAL_R1);							// Gets the state of R1
 
-		intake.move(-(intakeFwd - intakeRev) * 127);							// Sets the intake voltage
-		intake_2.move((intakeFwd - intakeRev) * 127);
-		lower_back_intake.move((intakeFwd - intakeRev) * 127);				   // Sets the lower back intake to spin in reverse
-		upper_back_intake.move((intakeFwd - intakeRev) * 127);					   // Sets the upper back intake to spin forwards
+		lower_intake.move(-(intakeFwd - intakeRev) * 127);					    // Sets the lower intake voltage
+		upper_intake.move((intakeFwd - intakeRev) * 127);						// Sets the upper intake voltage
+		lower_back_intake.move((intakeFwd - intakeRev) * 127);				    // Sets the lower back intake voltage
+		upper_back_intake.move((intakeFwd - intakeRev) * 127);					// Sets the upper back intake voltage
 
 		
 		// Debug information
-		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));		// Prints the left analog y value
-		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));		// Prints the right analog x value
-		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev)); // Prints the direction of the intake
+		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));						// Prints the left analog y value
+		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));						// Prints the right analog x value
+		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev));	// Prints the direction of the intake
 
 
 		pros::delay(20);                         // Run for 20 ms then update
