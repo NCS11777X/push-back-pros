@@ -1,8 +1,10 @@
 #include "main.h"
 #include "liblvgl/llemu.hpp"
+#include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
+#include "pros/motor_group.hpp"
 
 /**
  * A callback function for LLEMU's center button.
@@ -80,12 +82,14 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({2, 12, 14});     // Creates a motor group with forwards ports 2, 12, and 14
-	pros::MotorGroup right_mg({-1, -11, -13}); // Creates a motor group with reversed ports 1, 11, and 13
-	pros::MotorGroup intake({15, 16}); 			   // Creates a motor group for the intake
+	pros::MotorGroup left_mg({-2, -12, -14}, pros::MotorGearset::green);     // Creates a motor group with forwards ports 2, 12, and 14
+	pros::MotorGroup right_mg({1, 11, 13}, pros::MotorGearset::green); // Creates a motor group with reversed ports 1, 11, and 13
+	pros::MotorGroup intake({15}); 			   // Creates a motor group for the intake
+	pros::MotorGroup intake_2({16});
 	pros::MotorGroup lower_back_intake({3});    	   // Creates a motor for the lower back intake
 	pros::MotorGroup upper_back_intake({4});		   // Creates a motor for the upper back intake
-	pros::adi::DigitalOut flap(8);			   // Creates a group for the pistons that power the flap
+	pros::adi::DigitalOut flap('h');			   // Creates a group for the pistons that power the flap
+	
 
 	while (true) {
 
@@ -93,39 +97,28 @@ void opcontrol() {
 		int dir = master.get_analog(ANALOG_LEFT_Y);    						// Gets amount forward/backward from left joystick
 		int turn = master.get_analog(ANALOG_RIGHT_X);  						// Gets the turn left/right from right joystick
 
-		left_mg.move(dir - turn);                      						// Sets left motor voltage
-		right_mg.move(dir + turn);                     						// Sets right motor voltage
+		left_mg.move(dir + turn);                      						// Sets left motor voltage
+		right_mg.move(dir - turn);                     						// Sets right motor voltage
 		
 
 		// Flap control system
-				bool flapState = false;									// Sets the default flap state to 'false', which is down
-				bool a_pressed_flag = false;							// Flag to check if the 'A' button is being pressed, default false
-				
-				if (master.get_digital_new_press(DIGITAL_A)) {  // Checks if the 'A' button has been pressed
-					if (!flapState) {								   // Checks if the flap is currently down
-						flap.set_value(1);							   // Sets the pistons to on, raising the flap
-						flapState = true;							   // Sets the flap state to 'true'
-					}
-					else if (flapState) {							   // Checks if the flap is currently up
-						flap.set_value(0);							   // Sets the pistons to off, lowering the flap
-						flapState = false;							   // Sets the flap state to 'false'
-					}
-				}
+		
 
 
 		// Intake control system
 		int intakeFwd = master.get_digital(DIGITAL_R2);							// Gets the state of R2
 		int intakeRev = master.get_digital(DIGITAL_R1);							// Gets the state of R1
 
-		intake.move((intakeFwd - intakeRev) * 127);							// Sets the intake voltage
-		if (!flapState) {															   // Checks if the flap is currently down
+		intake.move(-(intakeFwd - intakeRev) * 127);							// Sets the intake voltage
+		intake_2.move((intakeFwd - intakeRev) * 127);
+		//if (!flapState) {															   // Checks if the flap is currently down
 			lower_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the lower back intake to spin in reverse
 			upper_back_intake.move(intakeFwd - intakeRev);					   // Sets the upper back intake to spin forwards
-		}
-		else {
-			lower_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the lower back intake to spin in reverse
-			upper_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the upper back intake to spin in reverse
-		}
+//		}
+//		else {
+//			lower_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the lower back intake to spin in reverse
+//			upper_back_intake.move(-(intakeFwd - intakeRev));				   // Sets the upper back intake to spin in reverse
+//		}
 
 		
 
@@ -133,7 +126,7 @@ void opcontrol() {
 		pros::lcd::set_text(0, "Left Analog Y:  " + std::to_string(dir));		// Prints the left analog y value
 		pros::lcd::set_text(1, "Right Analog X: " + std::to_string(turn));		// Prints the right analog x value
 		pros::lcd::set_text(2, "Intake direction: " + std::to_string(intakeFwd - intakeRev)); // Prints the direction of the intake
-		pros::lcd::set_text(3, "Flap state: " + std::to_string(flapState));	// Prints the current state of the flap
+	//	pros::lcd::set_text(3, "Flap state: " + std::to_string(flapState));	// Prints the current state of the flap
 
 
 		pros::delay(20);                         // Run for 20 ms then update
