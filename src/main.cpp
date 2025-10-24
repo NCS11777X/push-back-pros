@@ -5,6 +5,7 @@
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
+#include "pros/rtos.hpp"
 
 /**
  * A callback function for LLEMU's center button.
@@ -66,7 +67,22 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	/*
+	pros::MotorGroup left_mg({-2, -12, -14}, pros::MotorGearset::green);	// Creates a motor group with forwards ports 2, 12, and 14
+	pros::MotorGroup right_mg({1, 11, 13}, pros::MotorGearset::green);		// Creates a motor group with reversed ports 1, 11, and 13
+	pros::Motor lower_intake(15); 			   		// Creates a motor for the lower intake
+	pros::Motor upper_intake(16);						// Creates a motor for the upper intake
+	pros::Motor lower_back_intake(3);    	   			// Creates a motor for the lower back intake
+	pros::Motor upper_back_intake(4);		   			// Creates a motor for the upper back intake
 
+	left_mg.move_relative(100, 100);
+	right_mg.move_relative(100, 100);
+	while (!((left_mg.get_position() < 105) && (left_mg.get_position() > 95))) {
+		pros::delay(2);
+	}
+	left_mg.brake();
+	right_mg.brake();
+	*/
 }
 
 /**
@@ -94,6 +110,10 @@ void opcontrol() {
 	
 
 	while (true) {
+
+
+		//autonomous();
+
 
 		// Arcade control scheme
 		int dir = master.get_analog(ANALOG_LEFT_Y);    			// Gets amount forward/backward from left joystick
